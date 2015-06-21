@@ -65,15 +65,11 @@ class Interpreter(object):
         while current_char.isdigit():
             current_chars = current_chars + current_char
             self.pos += 1
-            if self.pos > len(text) - 1:
+            if self.pos > len(text) - 1 or not text[self.pos].isdigit():
                 token = Token(INTEGER, int(current_chars))
                 return token
             else:
                 current_char = text[self.pos]
-
-        if current_chars.isdigit():
-            token = Token(INTEGER, int(current_chars))
-            return token
 
         if current_char == '+':
             token = Token(PLUS, current_char)
