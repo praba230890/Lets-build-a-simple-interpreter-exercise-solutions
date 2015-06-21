@@ -57,14 +57,22 @@ class Interpreter(object):
         # get a character at the position self.pos and decide
         # what token to create based on the single character
         current_char = text[self.pos]
-
+        current_chars = ''
         # if the character is a digit then convert it to
         # integer, create an INTEGER token, increment self.pos
         # index to point to the next character after the digit,
         # and return the INTEGER token
-        if current_char.isdigit():
-            token = Token(INTEGER, int(current_char))
+        while current_char.isdigit():
+            current_chars = current_chars + current_char
             self.pos += 1
+            if self.pos > len(text) - 1:
+                token = Token(INTEGER, int(current_chars))
+                return token
+            else:
+                current_char = text[self.pos]
+
+        if current_chars.isdigit():
+            token = Token(INTEGER, int(current_chars))
             return token
 
         if current_char == '+':
@@ -88,27 +96,18 @@ class Interpreter(object):
         """expr -> INTEGER PLUS INTEGER"""
         # set current token to the first token taken from the input
         self.current_token = self.get_next_token()
-        
-        left_integer = ''
+
         # we expect the current token to be an integer
         left = self.current_token
-        while self.current_token.type == INTEGER:
-            left_integer = left_integer + str(self.current_token.value)
-            self.current_token = self.get_next_token()
+        self.eat(INTEGER)
 
         # we expect the current token to be a '+' token
         op = self.current_token
         self.eat(PLUS)
 
-        # we expect the current token to be a single-digit integer
-        right = self.current_token
-        
-        right_integer = ''
         # we expect the current token to be an integer
-        while self.current_token.type == INTEGER:
-            right_integer = right_integer + str(self.current_token.value)
-            self.current_token = self.get_next_token()
-
+        right = self.current_token
+        self.eat(INTEGER)
         # after the above call the self.current_token is set to
         # EOF token
 
@@ -116,7 +115,7 @@ class Interpreter(object):
         # has been successfully found and the method can just
         # return the result of adding two integers, thus
         # effectively interpreting client input
-        result = int(left_integer) + int(right_integer)
+        result = left.value + right.value
         return result
 
 
