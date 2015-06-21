@@ -31,7 +31,7 @@ class Token(object):
 class Interpreter(object):
     def __init__(self, text):
         # client string input, e.g. "3+5"
-        self.text = text.replace(" ", "")
+        self.text = text
         # self.pos is an index into self.text
         self.pos = 0
         # current token instance
@@ -39,7 +39,12 @@ class Interpreter(object):
 
     def error(self):
         raise Exception('Error parsing input')
-
+    
+    def increment_pos(self):
+        self.pos += 1
+        if self.pos < len(self.text) and self.text[self.pos] == " ":
+            self.increment_pos()
+    
     def get_next_token(self):
         """Lexical analyzer (also known as scanner or tokenizer)
 
@@ -57,6 +62,11 @@ class Interpreter(object):
         # get a character at the position self.pos and decide
         # what token to create based on the single character
         current_char = text[self.pos]
+        
+        if current_char == " ":
+            self.increment_pos()
+            current_char = text[self.pos]
+        
         current_chars = ''
         # if the character is a digit then convert it to
         # integer, create an INTEGER token, increment self.pos
@@ -64,7 +74,7 @@ class Interpreter(object):
         # and return the INTEGER token
         while current_char.isdigit():
             current_chars = current_chars + current_char
-            self.pos += 1
+            self.increment_pos()
             if self.pos > len(text) - 1:
                 token = Token(INTEGER, int(current_chars))
                 return token
@@ -77,7 +87,7 @@ class Interpreter(object):
 
         if current_char == '+':
             token = Token(PLUS, current_char)
-            self.pos += 1
+            self.increment_pos()
             return token
 
         self.error()
