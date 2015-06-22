@@ -116,9 +116,12 @@ class Interpreter(object):
         left = self.current_token
         self.eat(INTEGER)
 
-        # we expect the current token to be a '-' token
+        # we expect the current token to be a '+'/'-' token
         op = self.current_token
-        self.eat(MINUS)
+        if op.value == '+':
+            self.eat(PLUS)
+        elif op.value == '-':
+            self.eat(MINUS)
 
         # we expect the current token to be an integer
         right = self.current_token
@@ -126,11 +129,14 @@ class Interpreter(object):
         # after the above call the self.current_token is set to
         # EOF token
 
-        # at this point INTEGER MINUS INTEGER sequence of tokens
+        # at this point INTEGER PLUS/MINUS INTEGER sequence of tokens
         # has been successfully found and the method can just
         # return the result of subtracting two integers, thus
         # effectively interpreting client input
-        result = left.value - right.value
+        if op.type == PLUS:
+            result = left.value + right.value
+        if op.type == MINUS:
+            result = left.value - right.value
         return result
 
 
