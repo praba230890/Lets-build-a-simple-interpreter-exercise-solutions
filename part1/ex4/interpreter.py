@@ -1,4 +1,10 @@
 from __future__ import division
+import atexit
+
+@atexit.register
+def bye_message():
+    print "\nBye...."
+
 # Token types
 #
 # EOF (end-of-file) token is used to indicate that
@@ -167,6 +173,9 @@ def main():
             text = raw_input('calc> ')
         except EOFError:
             break
+        except KeyboardInterrupt:
+            text = None
+            print "\nKeyboardInterrupt"
         if not text:
             continue
         interpreter = Interpreter(text)
